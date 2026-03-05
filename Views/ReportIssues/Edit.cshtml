@@ -1,0 +1,119 @@
+﻿@model Prog7312PoePart1.Models.ReportIssue
+
+@{
+    ViewData["Title"] = "Edit Report";
+}
+
+<!-- Video background setup -->
+<div class="video-background">
+    <video autoplay muted loop id="bgVideo">
+        <source src="~/videos/Cat.mp4" type="video/mp4" />
+        Your browser does not support HTML5 video.
+    </video>
+    <div class="video-overlay"></div>
+</div>
+
+<!-- Main content container over video -->
+<div class="container content-over-video py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card card-overlay shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Edit Report</h3>
+                </div>
+                <div class="card-body">
+                    <!-- Form for editing the report -->
+                    <form asp-action="Edit" enctype="multipart/form-data">
+                        <input type="hidden" asp-for="Id" /> <!-- Hidden ID for binding -->
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <!-- Editable fields -->
+                        <div class="mb-3">
+                            <label asp-for="Title" class="form-label fw-semibold">Issue Title</label>
+                            <input asp-for="Title" class="form-control" />
+                            <span asp-validation-for="Title" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Description" class="form-label fw-semibold">Description</label>
+                            <textarea asp-for="Description" class="form-control" rows="4"></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Location" class="form-label fw-semibold">Location</label>
+                            <input asp-for="Location" class="form-control" />
+                            <span asp-validation-for="Location" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Category" class="form-label fw-semibold">Category</label>
+                            <select asp-for="Category" class="form-select">
+                                <option value="">-- Select a Category --</option>
+                                <option>Sanitation</option>
+                                <option>Roads</option>
+                                <option>Utilities</option>
+                                <option>Safety</option>
+                                <option>Other</option>
+                            </select>
+                            <span asp-validation-for="Category" class="text-danger"></span>
+                        </div>
+
+                        <!-- Display the date, readonly -->
+                        <div class="mb-3">
+                            <label asp-for="DateReported" class="form-label fw-semibold">Date Reported</label>
+                            <input asp-for="DateReported" class="form-control" readonly />
+                        </div>
+
+                        <!-- Media handling -->
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Attached Media</label>
+
+                            @if (!string.IsNullOrEmpty(Model.MediaPath))
+                            {
+                                <!-- Show current media and option to remove -->
+                                <div id="existingMediaDiv" class="mb-2">
+                                    <a href="@Model.MediaPath" target="_blank" class="btn btn-info btn-sm me-2">View Current Media</a>
+                                    <button type="button" class="btn btn-danger btn-sm" id="removeMediaBtn">Remove Media</button>
+                                </div>
+                                <input type="hidden" asp-for="MediaPath" id="MediaPathHidden" />
+                                <input type="file" name="mediaFile" class="form-control mt-2 d-none" id="mediaFileInput" />
+                            }
+                            else
+                            {
+                                <!-- Show file input if no media exists -->
+                                <input type="file" name="mediaFile" class="form-control mt-2" id="mediaFileInput" />
+                            }
+                        </div>
+
+                        <!-- Action buttons -->
+                        <div class="d-flex justify-content-between mt-4">
+                            <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        const removeBtn = document.getElementById('removeMediaBtn');
+        if (removeBtn) {
+            removeBtn.addEventListener('click', function() {
+                // Clear the hidden input so the controller knows the media was removed
+                document.getElementById('MediaPathHidden').value = '';
+
+                // Remove the existing media buttons
+                document.getElementById('existingMediaDiv').remove();
+
+                // Show the file upload input for new media
+                const mediaInput = document.getElementById('mediaFileInput');
+                mediaInput.classList.remove('d-none');
+            });
+        }
+    </script>
+}

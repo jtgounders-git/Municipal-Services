@@ -1,0 +1,225 @@
+﻿@model IEnumerable<Prog7312PoePart1.Models.ServiceRequest>
+
+@{
+    ViewData["Title"] = "Visualise Request Relationships";
+}
+
+<!-- =======================
+     BACKGROUND VIDEO SECTION
+     ======================= -->
+<!-- Displays a looping video background for the page aesthetic -->
+<div class="video-background">
+    <video autoplay muted loop id="bgVideo">
+        <source src="~/videos/Service Requests.mp4" type="video/mp4">
+    </video>
+    <div class="video-overlay"></div>
+</div>
+
+<!-- =======================
+     MAIN PAGE CONTENT
+     ======================= -->
+<div class="container content-over-video my-5">
+    <h1 class="text-center mb-4 display-5 fw-bold">Service Request Visualisation</h1>
+
+    <!-- ====== STATS SUMMARY CARDS ====== -->
+    <!-- Displays quick data summaries like total requests, top category, etc. -->
+    <div class="row g-3 mb-4 text-white text-center">
+        <div class="col-md-3">
+            <div class="card card-overlay shadow-sm p-3">
+                <h6>Total Requests</h6>
+                <p id="totalRequests" class="fs-4 fw-bold">0</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card card-overlay shadow-sm p-3">
+                <h6>Most Frequent Category</h6>
+                <p id="topCategory" class="fs-4 fw-bold">-</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card card-overlay shadow-sm p-3">
+                <h6>Highest Priority Count</h6>
+                <p id="topPriority" class="fs-4 fw-bold">0</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card card-overlay shadow-sm p-3">
+                <h6>Last Updated</h6>
+                <p id="lastUpdated" class="fs-4 fw-bold">-</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ====== VISUALISATION SECTION ====== -->
+    <div class="row g-4">
+        <!-- Network Graph: visualises relationships between service requests -->
+        <div class="col-md-12">
+            <div class="card card-overlay p-4 shadow-sm">
+                <h4 class="mb-3 text-center">Request Connections</h4>
+                <canvas id="networkGraph" width="900" height="400" class="bg-dark rounded"></canvas>
+            </div>
+        </div>
+
+        <!-- Pie charts for categories, statuses, and priorities -->
+        <div class="col-md-4">
+            <div class="card card-overlay p-3 shadow-sm text-center">
+                <h5>Requests by Category</h5>
+                <canvas id="categoryChart" width="200" height="200" class="bg-dark rounded"></canvas>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card card-overlay p-3 shadow-sm text-center">
+                <h5>Requests by Status</h5>
+                <canvas id="statusChart" width="200" height="200" class="bg-dark rounded"></canvas>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card card-overlay p-3 shadow-sm text-center">
+                <h5>Requests by Priority</h5>
+                <canvas id="priorityChart" width="200" height="200" class="bg-dark rounded"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Back button -->
+    <div class="text-center mt-4">
+        <a asp-controller="ServiceRequests" asp-action="Index" class="btn btn-outline-light px-4 py-2">← Back to Requests</a>
+    </div>
+</div>
+
+<!-- =======================
+     JAVASCRIPT SECTION
+     ======================= -->
+@section Scripts {
+    <!-- Load Chart.js for chart rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        // Converts numeric priority value into text label
+        function getPriorityLabel(priority) {
+            switch (priority) {
+                case 1: return "High";
+                case 2: return "Medium";
+                case 3: return "Low";
+                default: return "";
+            }
+        }
+
+        // Main async function to fetch and display all visualisation data
+        async function loadVisualisation() {
+            // Fetch JSON data from the controller endpoint
+            const res = await fetch('/ServiceRequestManager/VisualiseData');
+            const data = await res.json();
+
+            // Extract MST edges (connections between requests) and stats summary
+            const mstEdges = data.meta?.mstEdges || [];
+            const stats = data.meta?.stats || {};
+
+            // ====== DISPLAY KEY STATS ======
+            document.getElementById('totalRequests').innerText = stats.totalRequests || 0;
+
+            // Determine top category by count
+            if (stats.byCategory) {
+                const topCat = Object.entries(stats.byCategory).sort((a,b)=>b[1]-a[1])[0];
+                document.getElementById('topCategory').innerText = topCat ? topCat[0] : '-';
+            }
+
+            // Determine top priority by frequency
+            if (stats.byPriority) {
+                const topPri = Object.entries(stats.byPriority).sort((a,b)=>b[1]-a[1])[0];
+                document.getElementById('topPriority').innerText = topPri ? getPriorityLabel(parseInt(topPri[0])) : '0';
+            }
+
+            // Show the last updated time
+            document.getElementById('lastUpdated').innerText = new Date().toLocaleTimeString();
+
+            // ====== NETWORK GRAPH LOGIC ======
+            // Generate random node positions for visual display
+            const nodes = {};
+            mstEdges.forEach(e => {
+                if (!nodes[e.a]) nodes[e.a] = { x: Math.random()*800, y: Math.random()*300, label: e.a };
+                if (!nodes[e.b]) nodes[e.b] = { x: Math.random()*800, y: Math.random()*300, label: e.b };
+            });
+
+            // Define visual connections between nodes
+            const connections = mstEdges.map(e => ({
+                from: e.a,
+                to: e.b,
+                weight: e.w,
+                color: e.w <= 2 ? 'rgba(37,140,251,0.8)' : 'rgba(251,82,82,0.8)', // Color by weight
+                detail: `Connection weight: ${e.w} (lower = more similar)`
+            }));
+
+            // Prepare scatter chart dataset to simulate a network graph
+            const networkData = {
+                datasets: [{
+                    label: 'Connections',
+                    data: connections.flatMap(c => [nodes[c.from], nodes[c.to]]),
+                    showLine: true,
+                    borderColor: connections.map(c => c.color),
+                    backgroundColor: connections.map(c => c.color),
+                    pointRadius: 6,
+                    tension: 0.4
+                }]
+            };
+
+            // Create scatter chart (used as a pseudo-network diagram)
+            new Chart(document.getElementById('networkGraph'), {
+                type: 'scatter',
+                data: networkData,
+                options: {
+                    scales: { x: { display: false }, y: { display: false } },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const i = context.dataIndex;
+                                    if (i % 2 === 0) return connections[i/2].detail;
+                                    return '';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // ====== PIE CHARTS ======
+            // Helper function to create and style pie charts
+            function createPieChart(id, labels, values, colors) {
+                new Chart(document.getElementById(id), {
+                    type: 'pie',
+                    data: { labels, datasets: [{ data: values, backgroundColor: colors }] },
+                    options: { plugins: { legend: { labels: { color: 'white' } } } }
+                });
+            }
+
+            // Render category distribution
+            if (stats.byCategory) createPieChart(
+                'categoryChart',
+                Object.keys(stats.byCategory),
+                Object.values(stats.byCategory),
+                ['#258cfb','#fb5252','#52fb8a','#fbd152','#a752fb']
+            );
+
+            // Render status distribution
+            if (stats.byStatus) createPieChart(
+                'statusChart',
+                Object.keys(stats.byStatus),
+                Object.values(stats.byStatus),
+                ['#258cfb','#fb5252','#fbd152']
+            );
+
+            // Render priority distribution
+            if (stats.byPriority) createPieChart(
+                'priorityChart',
+                Object.keys(stats.byPriority).map(k => getPriorityLabel(parseInt(k))),
+                Object.values(stats.byPriority),
+                ['#fb5252','#fbd152','#52fb8a']
+            );
+        }
+
+        // Run the visualisation loader once the DOM is ready
+        document.addEventListener('DOMContentLoaded', loadVisualisation);
+    </script>
+}

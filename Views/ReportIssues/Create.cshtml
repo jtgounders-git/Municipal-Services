@@ -1,0 +1,109 @@
+﻿@model Prog7312PoePart1.Models.ReportIssue
+
+@{
+    ViewData["Title"] = "Report an Issue";
+}
+
+<!-- Video Background -->
+<div class="video-background">
+    <video autoplay muted loop id="bgVideo">
+        <source src="~/videos/Cat.mp4" type="video/mp4" />
+        Your browser does not support HTML5 video.
+    </video>
+    <div class="video-overlay"></div> 
+</div>
+
+<!-- Main content container over the video -->
+<div class="container content-over-video py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card card-overlay shadow-sm mb-5">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Report an Issue</h3>
+                </div>
+                <div class="card-body">
+
+                    <!-- Encouraging messages for the user -->
+                    <div id="encouragementBox" class="alert alert-info text-center mb-4">
+                        <span id="encouragementMessage">
+                            You're helping improve your community! Every report counts.
+                        </span>
+                    </div>
+
+                    <!-- Form for submitting a report -->
+                    <form asp-action="Create" enctype="multipart/form-data" method="post">
+                        <!-- Display model validation errors -->
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <!-- Issue Title -->
+                        <div class="mb-3">
+                            <label asp-for="Title" class="form-label fw-semibold">Issue Title</label>
+                            <input asp-for="Title" class="form-control" placeholder="Enter a short title" />
+                            <span asp-validation-for="Title" class="text-danger"></span>
+                        </div>
+
+                        <!-- Category dropdown -->
+                        <div class="mb-3">
+                            <label asp-for="Category" class="form-label fw-semibold">Category</label>
+                            <select asp-for="Category" class="form-select">
+                                <option value="">-- Select a Category --</option>
+                                <option>Sanitation</option>
+                                <option>Roads</option>
+                                <option>Utilities</option>
+                                <option>Safety</option>
+                                <option>Other</option>
+                            </select>
+                            <span asp-validation-for="Category" class="text-danger"></span>
+                        </div>
+
+                        <!-- Location -->
+                        <div class="mb-3">
+                            <label asp-for="Location" class="form-label fw-semibold">Location</label>
+                            <input asp-for="Location" class="form-control" placeholder="Enter the location of the issue" />
+                            <span asp-validation-for="Location" class="text-danger"></span>
+                        </div>
+
+                        <!-- Description -->
+                        <div class="mb-3">
+                            <label asp-for="Description" class="form-label fw-semibold">Description</label>
+                            <textarea asp-for="Description" class="form-control" rows="5" placeholder="Describe the issue in detail"></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+
+                        <!-- Optional media upload -->
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Attach Media/ File</label>
+                            <input type="file" name="mediaFile" class="form-control" />
+                        </div>
+
+                        <!-- Form buttons -->
+                        <div class="d-flex justify-content-between mt-4">
+                            <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+                            <button type="submit" class="btn btn-primary">Submit Report</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" /> 
+
+    <script>
+        // Rotating encouraging messages
+        const messages = [
+            "You're helping improve your community! Every report counts.",
+            "Small actions make a big difference — thanks for reporting!",
+            "Together we can make our town cleaner and safer!",
+            "Your voice matters — thank you for speaking up!",
+            "Every report is a step toward a better community!"
+        ];
+
+        let index = 0;
+        setInterval(() => {
+            index = (index + 1) % messages.length; // Cycle through messages
+            document.getElementById("encouragementMessage").textContent = messages[index]; }, 4000); // Change message every 4 seconds
+    </script>
+}

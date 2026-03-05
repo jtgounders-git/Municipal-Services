@@ -1,0 +1,230 @@
+﻿@model IEnumerable<Prog7312PoePart1.Models.ServiceRequest>
+@{
+    ViewData["Title"] = "Service Requests";
+}
+
+<!-- ================= BACKGROUND VIDEO SECTION ================= -->
+<!-- Adds an animated looping video as the page background for visual appeal -->
+<div class="video-background">
+    <video autoplay muted loop id="bgVideo">
+        <source src="~/videos/Service Requests.mp4" type="video/mp4">
+        Your browser does not support HTML5 video.
+    </video>
+    <div class="video-overlay"></div> <!-- Adds a subtle overlay to darken the video -->
+</div>
+
+<!-- ================= SUCCESS TOAST SECTION ================= -->
+<!-- Displays a Bootstrap toast notification when a successful action occurs -->
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div class="toast text-bg-success border-0 show" role="alert">
+            <div class="d-flex align-items-center">
+                <div class="toast-body">@TempData["SuccessMessage"]</div>
+                <button type="button" class="btn-close btn-close-white ms-2" data-bs-dismiss="toast"></button>
+            </div>
+        </div>
+    </div>
+}
+
+<!-- ================= MAIN CONTENT SECTION ================= -->
+<div class="container content-over-video my-5">
+    <h1 class="text-center mb-4 display-5 fw-bold">Service Requests</h1>
+
+    <!-- ===== Action Buttons: Create, Visualise, Reset ===== -->
+    <div class="text-center mb-4">
+        <!-- Navigates to Create form -->
+        <a asp-action="Create" class="btn btn-success me-2">New Request</a>
+
+        <!-- Opens visualisation page (e.g., graph of requests) -->
+        <a asp-controller="ServiceRequestManager" asp-action="Visualise" class="btn btn-outline-info me-2">Visualise</a>
+
+        <!-- Resets all filters -->
+        <button id="resetFilters" class="btn btn-secondary">Reset</button>
+    </div>
+
+    <!-- ================= FILTER BAR SECTION ================= -->
+    <!-- Allows users to filter and sort service requests dynamically -->
+    <div class="card card-overlay mb-4 shadow-sm p-3">
+        <div class="row g-2">
+            <!-- Free text search for title or description -->
+            <div class="col-md-3"><input id="search" class="form-control" placeholder="Search title/description" /></div>
+
+            <!-- Search by request ID -->
+            <div class="col-md-3"><input id="idFilter" class="form-control" placeholder="Search by ID" /></div>
+
+            <!-- Dropdown for filtering by status -->
+            <div class="col-md-2">
+                <select id="status" class="form-select">
+                    <option value="">All Status</option>
+                    <option>Waiting</option>
+                    <option>Pending</option>
+                    <option>Resolved</option>
+                </select>
+            </div>
+
+            <!-- Dropdown for filtering by category -->
+            <div class="col-md-2">
+                <select id="category" class="form-select">
+                    <option value="">All Categories</option>
+                    <option>Sanitation</option>
+                    <option>Roads</option>
+                    <option>Utilities</option>
+                    <option>Safety</option>
+                    <option>Other</option>
+                </select>
+            </div>
+
+            <!-- Dropdown for filtering by priority -->
+            <div class="col-md-2">
+                <select id="priority" class="form-select">
+                    <option value="">All Priorities</option>
+                    <option value="1">High</option>
+                    <option value="2">Medium</option>
+                    <option value="3">Low</option>
+                </select>
+            </div>
+
+            <!-- Dropdown for sorting (date or priority ascending/descending) -->
+            <div class="col-md-2">
+                <select id="sort" class="form-select">
+                    <option value="createdAsc">Created ↑</option>
+                    <option value="createdDesc">Created ↓</option>
+                    <option value="priorityAsc">Priority ↑</option>
+                    <option value="priorityDesc">Priority ↓</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= RESULTS TABLE SECTION ================= -->
+    <!-- Displays service request data returned from the server -->
+    <div class="card card-overlay p-3 shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-dark table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Description</th>
+                        <th>Category</th>
+                        <th>Location</th>
+                        <th>Status</th>
+                        <th>Priority</th>
+                        <th>Created</th>
+                        <th>Media</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <!-- Table body dynamically filled using JavaScript -->
+                <tbody id="requestsBody">
+                    <tr><td colspan="9" class="text-center text-muted">Loading...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- ================= JAVASCRIPT SECTION ================= -->
+@section Scripts {
+    <script>
+        (() => {
+            // ======== INITIAL SETUP & TOAST HANDLING ========
+            // Automatically show success toasts and hide them after 3 seconds
+            document.querySelectorAll('.toast').forEach(t => {
+                const toast = new bootstrap.Toast(t);
+                toast.show();
+                setTimeout(() => toast.hide(), 3000);
+            });
+
+            // ======== FILTER ELEMENT REFERENCES ========
+            // Store references to filter inputs and table body for easy access
+            const filters = {
+                search: document.getElementById('search'),
+                id: document.getElementById('idFilter'),
+                status: document.getElementById('status'),
+                category: document.getElementById('category'),
+                priority: document.getElementById('priority'),
+                sort: document.getElementById('sort'),
+                reset: document.getElementById('resetFilters'),
+                tableBody: document.getElementById('requestsBody')
+            };
+
+            // ======== MAIN DATA FETCH FUNCTION ========
+            // Fetches filtered data from the controller endpoint asynchronously
+            const loadRequests = async () => {
+                // Build query parameters based on user input
+                const params = new URLSearchParams({
+                    search: filters.search.value.trim(),
+                    id: filters.id.value.trim(),
+                    status: filters.status.value,
+                    category: filters.category.value,
+                    priority: filters.priority.value,
+                    sort: filters.sort.value
+                });
+
+                // Fetch JSON data from controller (calls GetFiltered in ServiceRequestManager)
+                const res = await fetch(`/ServiceRequestManager/GetFiltered?${params}`);
+                const { data } = await res.json();
+
+                // Helper function to display readable priority text
+                const priorityText = p => {
+                    switch(p) {
+                        case 1: return 'High';
+                        case 2: return 'Medium';
+                        case 3: return 'Low';
+                        default: return '';
+                    }
+                };
+
+                // ======== BUILD TABLE ROWS ========
+                // If data is found, create table rows dynamically, otherwise show “No results”
+                const rows = data?.length
+                    ? data.map(item => `
+                        <tr>
+                            <td>${item.title || ''}</td>
+                            <td>${(item.description || '').slice(0, 30)}${item.description?.length > 30 ? '...' : ''}</td>
+                            <td>${item.category || ''}</td>
+                            <td>${(item.location || '').slice(0, 20)}${item.location?.length > 20 ? '...' : ''}</td>
+                            <td>${item.status || ''}</td>
+                            <td>${priorityText(item.priority)}</td>
+                            <td>${item.createdAt ? new Date(item.createdAt).toLocaleDateString() : ''}</td>
+                            <td>${item.mediaPath ? `<a href="${item.mediaPath}" target="_blank" class="btn btn-sm btn-info">View</a>` : ''}</td>
+                            <td class="text-nowrap">
+                                <!-- Edit, View, and Delete action buttons -->
+                                <a href="/ServiceRequests/Edit/${item.id}" class="btn btn-sm btn-primary">Edit</a>
+                                <a href="/ServiceRequests/Details/${item.id}" class="btn btn-sm btn-info">View</a>
+                                <a href="/ServiceRequests/Delete/${item.id}" class="btn btn-sm btn-danger">Del</a>
+                            </td>
+                        </tr>
+                    `).join('')
+                    : '<tr><td colspan="9" class="text-center text-muted">No results found.</td></tr>';
+
+                // Insert the new rows into the table
+                filters.tableBody.innerHTML = rows;
+            };
+
+            // ======== FILTER CHANGE EVENT HANDLING ========
+            // Re-load data whenever any filter input or dropdown changes
+            ['input', 'change'].forEach(ev =>
+                Object.values(filters).forEach(el => {
+                    if (['INPUT', 'SELECT'].includes(el?.tagName))
+                        el.addEventListener(ev, loadRequests);
+                })
+            );
+
+            // ======== RESET BUTTON FUNCTIONALITY ========
+            // Clears all filters, resets dropdowns, and reloads default data
+            filters.reset.addEventListener('click', () => {
+                Object.values(filters).forEach(el => {
+                    if (el.tagName === 'INPUT') el.value = '';
+                    if (el.tagName === 'SELECT') el.selectedIndex = 0;
+                });
+                loadRequests(); // Reload table with default (unfiltered) data
+            });
+
+            // ======== INITIAL LOAD ========
+            // Automatically load data when page is first opened
+            loadRequests();
+        })();
+    </script>
+}

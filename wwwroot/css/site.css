@@ -1,0 +1,174 @@
+/* ------------------------------ Base ------------------------------ */
+html {
+    font-size: 14px;
+    position: relative;
+    min-height: 100%;
+}
+
+@media (min-width: 768px) {
+    html {
+        font-size: 16px;
+    }
+}
+
+body {
+    margin-bottom: 60px;
+    background-color: #1a1a1a;
+    overflow-y: auto;
+}
+
+main {
+    padding-bottom: 60px;
+}
+
+.container {
+    margin-top: 40px;
+    margin-bottom: 40px;
+}
+
+/* ------------------------------ Nav Bar ------------------------------ */
+.navbar {
+    background-color: transparent !important;
+    box-shadow: none !important;
+}
+
+    .navbar a, .navbar .navbar-brand {
+        color: #fff !important; 
+    }
+
+/* ------------------------------ Focus ------------------------------ */
+.btn:focus,
+.btn:active:focus,
+.btn-link.nav-link:focus,
+.form-control:focus,
+.form-check-input:focus {
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+/* ------------------------------ Form Placeholders ------------------------------ */
+.form-floating > .form-control-plaintext::placeholder,
+.form-floating > .form-control::placeholder {
+    color: var(--bs-secondary-color);
+    text-align: end;
+}
+
+.form-floating > .form-control-plaintext:focus::placeholder,
+.form-floating > .form-control:focus::placeholder {
+    text-align: start;
+}
+
+/* ------------------------------ Video Background ------------------------------ */
+.video-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    min-width: 100%;
+    min-height: 100%;
+    z-index: -1;
+    overflow: hidden;
+}
+
+#bgVideo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.video-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 0;
+}
+
+.content-over-video {
+    position: relative;
+    z-index: 1;
+    color: #fff8e7;
+}
+
+    .content-over-video h1,
+    .content-over-video p {
+        color: #fff8e7;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.7);
+    }
+
+    .content-over-video .row {
+        margin-top: 40px;
+    }
+
+/* ------------------------------ Cards ------------------------------ */
+.card-overlay {
+    background-color: rgba(30, 30, 30, 0.85);
+    border-radius: 12px;
+    box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+    color: #fff8e7;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+    .card-overlay:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+    }
+
+/* ------------------------------ Footer ------------------------------ */
+.footer {
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #111;
+    color: #ccc;
+    font-size: 0.85rem;
+}
+
+    .footer .container {
+        padding-top: 0;
+        padding-bottom: 0;
+    }
+
+    .footer a {
+        color: #fff8e7;
+    }
+
+        .footer a:hover {
+            text-decoration: underline;
+            color: #ffffff;
+        }
+
+/* ------------------------------ Tables ------------------------------ */
+.table-hover tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.table th,
+.table td {
+    vertical-align: middle;
+}
+
+.btn-sm {
+    font-size: 0.85rem;
+}
+
+/* ------------------------------ Input Validation ------------------------------ */
+@keyframes shake {
+    0%, 100% {
+        transform: translateX(0);
+    }
+
+    20%, 60% {
+        transform: translateX(-5px);
+    }
+
+    40%, 80% {
+        transform: translateX(5px);
+    }
+}
+
+.input-validation-error {
+    animation: shake 0.3s;
+    border-color: #dc3545;
+}

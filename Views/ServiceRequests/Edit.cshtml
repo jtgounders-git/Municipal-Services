@@ -1,0 +1,123 @@
+﻿@model Prog7312PoePart1.Models.ServiceRequest
+
+@{
+    ViewData["Title"] = "Edit Service Request";
+}
+
+<div class="video-background">
+    <video autoplay muted loop id="bgVideo">
+        <source src="~/videos/Cat.mp4" type="video/mp4" />
+    </video>
+    <div class="video-overlay"></div>
+</div>
+
+<div class="container content-over-video py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card card-overlay shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Edit Service Request</h3>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Edit" enctype="multipart/form-data">
+                        <input type="hidden" asp-for="Id" />
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="Title" class="form-label fw-semibold">Title</label>
+                            <input asp-for="Title" class="form-control" />
+                            <span asp-validation-for="Title" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Description" class="form-label fw-semibold">Description</label>
+                            <textarea asp-for="Description" class="form-control" rows="4"></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Location" class="form-label fw-semibold">Location</label>
+                            <input asp-for="Location" class="form-control" />
+                            <span asp-validation-for="Location" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Category" class="form-label fw-semibold">Category</label>
+                            <select asp-for="Category" class="form-select">
+                                <option value="">-- Select a Category --</option>
+                                <option>Sanitation</option>
+                                <option>Roads</option>
+                                <option>Utilities</option>
+                                <option>Safety</option>
+                                <option>Other</option>
+                            </select>
+                            <span asp-validation-for="Category" class="text-danger"></span>
+                        </div>
+
+                        <!-- Status -->
+                        <div class="form-group">
+                            <label asp-for="Status" class="control-label"></label>
+                            <select asp-for="Status" asp-items="Html.GetEnumSelectList<RequestStatus>()" class="form-control"></select>
+                        </div>
+
+                        <!-- Priority -->
+                        <div class="col-md-2">
+                            <label asp-for="Priority" class="form-label fw-semibold">Priority</label>
+                            <select asp-for="Priority" class="form-select">
+                                <option value="1">High</option>
+                                <option value="2">Medium</option>
+                                <option value="3">Low</option>
+                            </select>
+                            <span asp-validation-for="Priority" class="text-danger"></span>
+                        </div>
+
+                        <!-- CreatedAt readonly -->
+                        <div class="mb-3">
+                            <label asp-for="CreatedAt" class="form-label fw-semibold">Created At</label>
+                            <input asp-for="CreatedAt" class="form-control" readonly />
+                        </div>
+
+                        <!-- Media -->
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Attached Media</label>
+
+                            @if (!string.IsNullOrEmpty(Model.MediaPath))
+                            {
+                                <div id="existingMediaDiv" class="mb-2">
+                                    <a href="@Model.MediaPath" target="_blank" class="btn btn-info btn-sm me-2">View Current Media</a>
+                                    <button type="button" class="btn btn-danger btn-sm" id="removeMediaBtn">Remove Media</button>
+                                </div>
+                                <input type="hidden" asp-for="MediaPath" id="MediaPathHidden" />
+                                <input type="file" name="mediaFile" class="form-control mt-2 d-none" id="mediaFileInput" />
+                            }
+                            else
+                            {
+                                <input type="file" name="mediaFile" class="form-control mt-2" id="mediaFileInput" />
+                            }
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        const removeBtn = document.getElementById('removeMediaBtn');
+        if (removeBtn) {
+            removeBtn.addEventListener('click', function() {
+                document.getElementById('MediaPathHidden').value = '';
+                document.getElementById('existingMediaDiv').remove();
+                const mediaInput = document.getElementById('mediaFileInput');
+                mediaInput.classList.remove('d-none');
+            });
+        }
+    </script>
+}

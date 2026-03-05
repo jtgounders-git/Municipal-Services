@@ -1,0 +1,66 @@
+﻿@model Prog7312PoePart1.Models.ServiceRequest
+
+@{
+    ViewData["Title"] = "Service Request Details";
+}
+
+<div class="video-background">
+    <video autoplay muted loop id="bgVideo">
+        <source src="~/videos/Cat.mp4" type="video/mp4" />
+    </video>
+    <div class="video-overlay"></div>
+</div>
+
+<div class="container content-over-video py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card card-overlay shadow-sm">
+                <div class="card-header bg-info text-white">
+                    <h3 class="mb-0">Service Request Details</h3>
+                </div>
+                <div class="card-body">
+
+                    <dl class="row">
+                        <dt class="col-sm-3 fw-semibold">Title</dt>
+                        <dd class="col-sm-9">@Model.Title</dd>
+
+                        <dt class="col-sm-3 fw-semibold">Description</dt>
+                        <dd class="col-sm-9">@Model.Description</dd>
+
+                        <dt class="col-sm-3 fw-semibold">Location</dt>
+                        <dd class="col-sm-9">@Model.Location</dd>
+
+                        <dt class="col-sm-3 fw-semibold">Category</dt>
+                        <dd class="col-sm-9">@Model.Category</dd>
+
+                        <dt class="col-sm-3 fw-semibold">Status</dt>
+                        <dd class="col-sm-9">@Model.Status</dd>
+
+                        <dt class="col-sm-3 fw-semibold">Priority</dt>
+                        <dd class="col-sm-9">@Model.Priority</dd>
+
+                        <dt class="col-sm-3 fw-semibold">Created At</dt>
+                        <dd class="col-sm-9">@Model.CreatedAt.ToString("yyyy-MM-dd")</dd>
+
+                        <dt class="col-sm-3 fw-semibold">Media</dt>
+                        <dd class="col-sm-9">
+                            @if (!string.IsNullOrEmpty(Model.MediaPath))
+                            {
+                                <a href="@Model.MediaPath" target="_blank" class="btn btn-info btn-sm">View Media</a>
+                            }
+                            else
+                            {
+                                <span class="text-muted">No media attached</span>
+                            }
+                        </dd>
+                    </dl>
+
+                    <div class="d-flex justify-content-between mt-4">
+                        <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+                        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Edit</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

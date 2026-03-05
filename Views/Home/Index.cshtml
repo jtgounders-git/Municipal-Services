@@ -1,0 +1,53 @@
+﻿@{
+    ViewData["Title"] = "Main Menu";
+}
+
+<!-- Video Background -->
+<div class="video-background">
+    <video autoplay muted loop id="bgVideo">
+        <source src="~/videos/Pixel nature.mp4" type="video/mp4">
+        Your browser does not support HTML5 video.
+    </video>
+    <div class="video-overlay"></div>
+</div>
+
+<!-- Main Content -->
+<div class="container content-over-video text-center my-5">
+    <h1 class="display-4 fw-bold">Welcome to the Municipal Services App</h1>
+    <p class="lead">Select an option below to continue</p>
+
+    <div class="row mt-4">
+        <!-- Report Issues -->
+        <div class="col-md-4 mb-4">
+            <div class="card card-overlay h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title fw-bold">Report Issues</h5>
+                    <p class="card-text">Submit and track issues in your community.</p>
+                    <a asp-controller="ReportIssues" asp-action="Index" class="btn btn-primary">Go</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Local Events & Announcements -->
+        <div class="col-md-4 mb-4">
+            <div class="card card-overlay h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title fw-bold">Local Events & Announcements</h5>
+                    <p class="card-text">Stay updated with news and upcoming events in your area.</p>
+                    <a asp-controller="Events" asp-action="Index" class="btn btn-primary">Go</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Service Request Status -->
+        <div class="col-md-4 mb-4">
+            <div class="card card-overlay h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title fw-bold">Service Request Status</h5>
+                    <p class="card-text">Check the progress of your submitted service requests.</p>
+                    <a asp-controller="ServiceRequests" asp-action="Index" class="btn btn-primary">Go</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

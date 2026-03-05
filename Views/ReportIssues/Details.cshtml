@@ -1,0 +1,67 @@
+﻿@model Prog7312PoePart1.Models.ReportIssue
+
+@{
+    ViewData["Title"] = "Report Details";
+}
+
+<!-- Video background setup -->
+<div class="video-background">
+    <video autoplay muted loop id="bgVideo">
+        <source src="~/videos/Cat.mp4" type="video/mp4" />
+        Your browser does not support HTML5 video.
+    </video>
+    <div class="video-overlay"></div> 
+</div>
+
+<!-- Main content container over the video -->
+<div class="container content-over-video py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card card-overlay shadow-sm">
+                <div class="card-header bg-info text-white">
+                    <h3 class="mb-0">Report Details</h3>
+                </div>
+                <div class="card-body">
+
+                    <!-- Display report details in a definition list -->
+                    <dl class="row">
+                        <dt class="col-sm-3 fw-semibold">Title</dt>
+                        <dd class="col-sm-9">@Model.Title</dd>
+
+                        <dt class="col-sm-3 fw-semibold">Description</dt>
+                        <dd class="col-sm-9">@Model.Description</dd>
+
+                        <dt class="col-sm-3 fw-semibold">Location</dt>
+                        <dd class="col-sm-9">@Model.Location</dd>
+
+                        <dt class="col-sm-3 fw-semibold">Category</dt>
+                        <dd class="col-sm-9">@Model.Category</dd>
+
+                        <dt class="col-sm-3 fw-semibold">Date Reported</dt>
+                        <dd class="col-sm-9">@Model.DateReported.ToString("yyyy-MM-dd")</dd>
+
+                        <dt class="col-sm-3 fw-semibold">Media</dt>
+                        <dd class="col-sm-9">
+                            @if (!string.IsNullOrEmpty(Model.MediaPath))
+                            {
+                                <!-- Display link to media if attached -->
+                                <a href="@Model.MediaPath" target="_blank" class="btn btn-info btn-sm">View Media</a>
+                            }
+                            else
+                            {
+                                <!-- Message if no media attached -->
+                                <span class="text-muted">No media attached</span>
+                            }
+                        </dd>
+                    </dl>
+
+                    <!-- Action buttons -->
+                    <div class="d-flex justify-content-between mt-4">
+                        <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+                        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Edit</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

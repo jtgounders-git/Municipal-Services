@@ -1,0 +1,202 @@
+﻿@model IEnumerable<Prog7312PoePart1.Models.Event>
+
+@{
+    ViewData["Title"] = "Local Events and Announcements";
+    var categories = ViewBag.Categories as List<string>;
+    var topPriority = ViewBag.TopPriority as List<Prog7312PoePart1.Models.Event>;
+    var recommended = ViewBag.Recommended as List<Prog7312PoePart1.Models.Event>;
+    var recentSearches = ViewBag.RecentSearches as List<string>;
+}
+
+<!-- Video Background -->
+<div class="video-background">
+    <video autoplay muted loop id="bgVideo">
+        <source src="~/videos/Events.mp4" type="video/mp4">
+        Your browser does not support HTML5 video.
+    </video>
+    <div class="video-overlay"></div>
+</div>
+
+<!-- Main Content -->
+<div class="container content-over-video my-5">
+    <h1 class="text-center mb-4 display-5 fw-bold">Local Events & Announcements</h1>
+
+    <!-- Search & Filter Form -->
+    <div class="card card-overlay mb-5 shadow-sm p-3">
+        <div class="card-body">
+            <form method="get" asp-action="Index" class="row g-3 align-items-end">
+                <div class="col-md-4">
+                    <label for="searchTerm" class="form-label fw-semibold">Search by Title</label>
+                    <input type="text" id="searchTerm" name="searchTerm" class="form-control"
+                           value="@ViewData["SearchTerm"]" placeholder="Enter event title..." />
+                </div>
+
+                <div class="col-md-3">
+                    <label for="categoryFilter" class="form-label fw-semibold">Filter by Category</label>
+                    <select name="categoryFilter" class="form-select">
+                        <option value="">All Categories</option>
+                        @if (categories != null && categories.Count > 0)
+                        {
+                            for (int i = 0; i < categories.Count; i++)
+                            {
+                                var cat = categories[i];
+                                var selectedCategory = ViewData["SelectedCategory"]?.ToString();
+                                if (selectedCategory == cat)
+                                {
+                                    <option value="@cat" selected>@cat</option>
+                                }
+                                else
+                                {
+                                    <option value="@cat">@cat</option>
+                                }
+                            }
+                        }
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <label for="startDate" class="form-label fw-semibold">Start Date</label>
+                    <input type="date" id="startDate" name="startDate" class="form-control"
+                           value="@ViewData["StartDate"]" />
+                </div>
+
+                <div class="col-md-2">
+                    <label for="endDate" class="form-label fw-semibold">End Date</label>
+                    <input type="date" id="endDate" name="endDate" class="form-control"
+                           value="@ViewData["EndDate"]" />
+                </div>
+
+                <!-- Search Button -->
+                <div class="col-md-1 d-grid">
+                    <button type="submit" class="btn btn-primary w-100 fw-semibold">Search</button>
+                </div>
+
+                <!-- Reset Button -->
+                <div class="col-md-1 d-grid">
+                    <a href="@Url.Action("Index")" class="btn btn-secondary w-100 fw-semibold">Reset</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Top Priority Events (Filtered by Search Results) -->
+    @if (topPriority != null && topPriority.Count > 0)
+    {
+        <h3 class="text-warning fw-bold text-center mt-5 mb-4">Top Priority Events</h3>
+        <div class="row row-cols-1 row-cols-md-3 g-4 justify-content-center">
+            @for (int i = 0; i < topPriority.Count; i++)
+            {
+                var ev = topPriority[i];
+                <div class="col">
+                    <div class="card card-overlay h-100 shadow-sm border-warning">
+                        <div class="card-body">
+                            <h5 class="card-title fw-bold text-light">@ev.Title</h5>
+                            <p class="card-text text-light">@ev.Description</p>
+                            <p class="small mb-1"><strong>Category:</strong> @ev.Category</p>
+                            <p class="small mb-2"><strong>Date:</strong> @ev.Date.ToString("dd MMM yyyy")</p>
+
+                            <!-- Badge to show event type -->
+                            @if (ev.IsAnnouncement)
+                            {
+                                <span class="badge bg-warning text-dark">Announcement</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-info text-dark">Event</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+    <!-- All Events and Announcements -->
+    <h3 class="fw-bold text-center mt-5 mb-4 text-light">Upcoming Events & Announcements</h3>
+    @if (Model != null && Model.Count() > 0)
+    {
+        var modelList = Model.ToList();
+        <div class="row row-cols-1 row-cols-md-3 g-4 justify-content-center">
+            <!-- Use for loop instead of foreach -->
+            @for (int i = 0; i < modelList.Count; i++)
+            {
+                var ev = modelList[i];
+                <div class="col">
+                    <div class="card card-overlay h-100 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title fw-bold text-light">@ev.Title</h5>
+                            <p class="card-text text-light">@ev.Description</p>
+                            <p class="small mb-1"><strong>Category:</strong> @ev.Category</p>
+                            <p class="small mb-2"><strong>Date:</strong> @ev.Date.ToString("dd MMM yyyy")</p>
+
+                            <!-- Event type badge -->
+                            @if (ev.IsAnnouncement)
+                            {
+                                <span class="badge bg-warning text-dark">Announcement</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-info text-dark">Event</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-danger text-center fw-semibold mt-5" role="alert">
+            No events or announcements match your search criteria.
+        </div>
+    }
+
+    <!-- Recommended Events -->
+    @if (recommended != null && recommended.Count > 0)
+    {
+        <h3 class="fw-bold text-center mt-5 mb-4 text-light">Recommended Based on Your Searches</h3>
+        <div class="row row-cols-1 row-cols-md-3 g-4 justify-content-center">
+            <!-- Use index loop -->
+            @for (int i = 0; i < recommended.Count; i++)
+            {
+                var ev = recommended[i];
+                <div class="col">
+                    <div class="card card-overlay h-100 shadow-sm border-secondary">
+                        <div class="card-body">
+                            <h5 class="card-title fw-bold text-light">@ev.Title</h5>
+                            <p class="card-text text-light">@ev.Description</p>
+                            <p class="small mb-1"><strong>Category:</strong> @ev.Category</p>
+                            <p class="small mb-2"><strong>Date:</strong> @ev.Date.ToString("dd MMM yyyy")</p>
+
+                            <!-- Badge based on event type -->
+                            @if (ev.IsAnnouncement)
+                            {
+                                <span class="badge bg-warning text-dark">Announcement</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-info text-dark">Event</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Recently Searched Section -->
+        @if (recentSearches != null && recentSearches.Count > 0)
+        {
+            <div class="mt-3 text-center">
+                <h6 class="text-light mb-2">Your Recent Searches:</h6>
+                <ul class="list-inline">
+                    <!-- Show each recent search term -->
+                    @for (int i = 0; i < recentSearches.Count; i++)
+                    {
+                        var search = recentSearches[i];
+                        <li class="list-inline-item badge bg-secondary text-light border">@search</li>
+                    }
+                </ul>
+            </div>
+        }
+    }
+</div>
