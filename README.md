@@ -116,53 +116,55 @@ The project demonstrates applied programming concepts in a practical MVC context
 ---
 
 ## 📁 Project Structure
-/Prog7312PoePart1
-│
-├─ /Controllers
-│ ├── EventsController.cs
-│ ├── ReportIssuesController.cs # Handles Create, Edit, Delete, Details, Index for report issues
-│ ├── ServiceRequestController.cs # Handles Create, Edit, Delete, Details, Index for service requests
-│ ├── ServiceRequestManagerController.cs # Handles Visualise view and other management logic
-│
-├─ /Models
-│ ├── Event.cs
-│ ├── ReportIssue.cs
-│ ├── ServiceRequest.cs
-│
-├─ /Services
-│ ├── ServiceRequestService.cs # Handles business logic, simplifies controllers
-│
-├─ /DataStructures
-│ ├── AVLTree.cs
-│ ├── MinHeap.cs
-│ ├── Graph.cs
-│
-├─ /Views
-│ ├─ /Events
-│ │ └── Index.cshtml
-│ ├─ /ReportIssues
-│ │ └── Index.cshtml
-│ ├─ /ServiceRequest
-│ │ ├── Create.cshtml
-│ │ ├── Edit.cshtml
-│ │ ├── Delete.cshtml
-│ │ ├── Details.cshtml
-│ │ └── Index.cshtml
-│ ├─ /ServiceRequestManager
-│ │ └── Visualise.cshtml
-│ ├─ /Shared
-│ │ └── _Layout.cshtml
-│
-├─ /wwwroot
-│ ├── /videos
-│ │ └── Service Requests.mp4
-│ ├── /uploads
-│ └── /css
-│ └── site.css
-│
-├─ Prog7312PoePart1.sln
-└─ README.md
 
+```
+/Prog7312PoePart1/
+│
+├── Controllers/
+│   ├── EventsController.cs
+│   ├── ReportIssuesController.cs        # Create, Edit, Delete, Details, Index for issues
+│   ├── ServiceRequestController.cs     # Create, Edit, Delete, Details, Index for service requests
+│   └── ServiceRequestManagerController.cs # Visualise view & management logic
+│
+├── Models/
+│   ├── Event.cs
+│   ├── ReportIssue.cs
+│   └── ServiceRequest.cs
+│
+├── Services/
+│   └── ServiceRequestService.cs        # Business logic, simplifies controllers
+│
+├── DataStructures/
+│   ├── AVLTree.cs
+│   ├── MinHeap.cs
+│   └── Graph.cs
+│
+├── Views/
+│   ├── Events/
+│   │   └── Index.cshtml
+│   ├── ReportIssues/
+│   │   └── Index.cshtml
+│   ├── ServiceRequest/
+│   │   ├── Create.cshtml
+│   │   ├── Edit.cshtml
+│   │   ├── Delete.cshtml
+│   │   ├── Details.cshtml
+│   │   └── Index.cshtml
+│   ├── ServiceRequestManager/
+│   │   └── Visualise.cshtml
+│   └── Shared/
+│       └── _Layout.cshtml
+│
+├── wwwroot/
+│   ├── videos/
+│   │   └── Service Requests.mp4
+│   ├── uploads/
+│   └── css/
+│       └── site.css
+│
+├── Prog7312PoePart1.sln
+└── README.md
+```
 ---
 
 ## 🪶 Notes
